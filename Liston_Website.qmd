@@ -1,0 +1,45 @@
+---
+title: "Visualizing the impact of hurricanes on mangroves over time"
+author: Isabel Liston
+date: today
+date-format: long
+---
+
+# Introduction
+
+\[\~ 200 words\]
+
+Mangrove trees are a very important aspect of many coastal ecosystems. Many of these areas are also impacted by hurricanes, therefore it is beneficial to understand how hurricanes damage mangrove trees and how long it takes trees to recover from said damage.
+
+# Materials and methods
+
+\[\~ 200 words\]
+
+Narrative: Clear narrative description of the data sources and methods. Includes data from at least two sources that were integrated / merged in R.
+
+Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.
+
+Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.
+
+Load any required packages in a code chunk (you may need to install some packages):
+
+## Download and clean all required data
+
+# Results
+
+\[\~200 words\]
+
+Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.
+
+Show tables, plots, etc. and describe them.
+
+
+# Conclusions
+
+\[\~200 words\]
+
+Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
+
+# References
+
+All sources are cited in a consistent manner
