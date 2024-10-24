@@ -11,7 +11,14 @@
     "href": "index.html#download-and-clean-all-required-data",
     "title": "My Final Project Template",
     "section": "Download and clean all required data",
-    "text": "Download and clean all required data\n\nn=20\ndata=data.frame(x=runif(n,-180,180),\n                y=runif(n,-60,60),\n                size = runif(n, 5, 20),\n                category = factor(\n                  sample(letters[1:5], n, replace = TRUE)\n                  ),\n                value = rnorm(n))\n\ndata %&gt;% \n  slice(1:10) %&gt;% #show only 1:n rows\n  kable(digits=2,align=\"c\")%&gt;% #make table and round to two digits\n  kable_styling(bootstrap_options = \n                  c(\"striped\", \"hover\", \"condensed\", \"responsive\")) #apply other formatting\n\n\n\n\nx\ny\nsize\ncategory\nvalue\n\n\n\n\n-13.89\n3.84\n7.16\nb\n0.21\n\n\n13.37\n51.75\n17.27\nd\n-0.30\n\n\n163.47\n-11.55\n7.98\ne\n-1.33\n\n\n129.20\n59.72\n14.49\nc\n-0.07\n\n\n-18.83\n35.83\n19.92\nb\n-0.39\n\n\n81.18\n-33.85\n15.64\na\n0.72\n\n\n-179.11\n18.86\n12.30\na\n0.07\n\n\n16.79\n-0.22\n10.41\nd\n0.16\n\n\n115.39\n-8.36\n19.16\ne\n0.01\n\n\n35.70\n13.15\n11.32\ne\n-0.16\n\n\n\n\n\n\nAdd any additional processing steps here."
+    "text": "Download and clean all required data\n\nn=20\ndata=data.frame(x=runif(n,-180,180),\n                y=runif(n,-60,60),\n                size = runif(n, 5, 20),\n                category = factor(\n                  sample(letters[1:5], n, replace = TRUE)\n                  ),\n                value = rnorm(n))\n\ndata %&gt;% \n  slice(1:10) %&gt;% #show only 1:n rows\n  kable(digits=2,align=\"c\")%&gt;% #make table and round to two digits\n  kable_styling(bootstrap_options = \n                  c(\"striped\", \"hover\", \"condensed\", \"responsive\")) #apply other formatting\n\n\n\n\nx\ny\nsize\ncategory\nvalue\n\n\n\n\n-66.31\n-19.33\n19.86\nd\n0.48\n\n\n-80.36\n-44.36\n12.45\na\n0.12\n\n\n-49.28\n12.21\n7.81\na\n0.18\n\n\n-100.77\n5.02\n10.61\nd\n-3.03\n\n\n171.55\n16.55\n12.74\na\n0.16\n\n\n-22.59\n-9.77\n8.38\nc\n1.25\n\n\n-156.54\n26.85\n19.84\nb\n0.11\n\n\n106.24\n27.36\n7.11\nb\n0.11\n\n\n-79.77\n-15.97\n18.46\nb\n-1.32\n\n\n-65.93\n-53.75\n16.52\nb\n0.53\n\n\n\n\n\n\nAdd any additional processing steps here."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
   },
   {
     "objectID": "data/Readme.html",
@@ -21,10 +28,17 @@
     "text": "Place any data needed by your analysis in this folder. Please do not store large files here. Then read in any data using the ‘data’ path. For example, read_csv(\"data/data.csv\")."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "Liston_Website.html",
+    "href": "Liston_Website.html",
+    "title": "Visualizing the impact of hurricanes on mangroves over time",
     "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "text": "[~ 200 words]\nMangrove trees are a very important aspect of many coastal ecosystems. Many of these areas are also impacted by hurricanes, therefore it is beneficial to understand how hurricanes damage mangrove trees and how long it takes trees to recover from said damage."
+  },
+  {
+    "objectID": "Liston_Website.html#download-and-clean-all-required-data",
+    "href": "Liston_Website.html#download-and-clean-all-required-data",
+    "title": "Visualizing the impact of hurricanes on mangroves over time",
+    "section": "Download and clean all required data",
+    "text": "Download and clean all required data"
   }
 ]
