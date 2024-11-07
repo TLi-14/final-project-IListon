@@ -33,7 +33,6 @@ Tables and figures (maps and other graphics) are carefully planned to convey the
 
 Show tables, plots, etc. and describe them.
 
-
 # Conclusions
 
 \[\~200 words\]
