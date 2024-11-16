@@ -5,40 +5,101 @@ date: today
 date-format: long
 ---
 
-# Introduction
+# Introduction:
 
-\[\~ 200 words\]
+  Mangrove trees are a very important aspect of many coastal ecosystems. Many of these areas are also impacted by hurricanes, therefore it is beneficial to understand how hurricanes damage mangrove trees and how long it takes trees to recover from said damage. Following Hurricane Andrew in 1992 permanent study plots were established, then more added to examine historic areas of study. In total there are 23 plots with data spanning 1992-2011. The goal of this project is to visualize many different aspects of how individual mangroves, different mangrove species and the plots overall respond to hurricanes over time.
 
-Mangrove trees are a very important aspect of many coastal ecosystems. Many of these areas are also impacted by hurricanes, therefore it is beneficial to understand how hurricanes damage mangrove trees and how long it takes trees to recover from said damage.
+# Materials and Methods:
 
-# Materials and methods
+## Load libraries
 
-\[\~ 200 words\]
+```{r, warning = FALSE, message = FALSE}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(drat)
+addRepo("geanders")
+update.packages("hurricaneexposure")
+update.packages("hurricaneexposuredata")
+library(hurricaneexposure)
+library(hurricaneexposuredata)
+library(sf)
+library(spData)
+```
 
-Narrative: Clear narrative description of the data sources and methods. Includes data from at least two sources that were integrated / merged in R.
+## Load data
 
-Code: The code associated with the project is well organized and easy to follow. Demonstrates mastery of R graphics and functions.
+```{r, warning = FALSE, message = FALSE}
+data("us_states")
+EVG_raw_data <- read.csv("data/Everglades_Mangrove_Vegetation_plot_data.csv")
+data("hurr_tracks")
+```
 
-Data: The underlying data are publicly accessible via the web and downloaded/accessed within the Rmd script. If you want to use your own data, you must make it available on a website (e.g. Figshare) so that others are able to re-run your code.
+## Clean up data
 
-## Download and clean all required data
+```{r, warning = FALSE, message = FALSE}
+#create the study area bounding box
+bbox_coords <- c(-81.2133, 25.5831,-80.9134, 25.1589)
 
-Add any additional processing steps here.
+#create a polygon from the bounding box
+bbox_polygon <- st_as_sf(st_sfc(st_polygon(list(matrix(c(
+   bbox_coords[1], bbox_coords[2],  
+   bbox_coords[3], bbox_coords[2],
+   bbox_coords[3], bbox_coords[4],  
+   bbox_coords[1], bbox_coords[4],
+   bbox_coords[1], bbox_coords[2]   
+), ncol = 2, byrow = TRUE))), crs = 4326))
 
-# Results
+study_crs <- st_crs(bbox_polygon)
 
-\[\~200 words\]
+us_states_transform <- st_transform(us_states, crs = study_crs)
+#this study area polygon is giving me trouble, I'm not sure if it is a projection issue or if I should start with a different shapefile
 
-Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.
+study_area <- st_crop(us_states_transform, bbox_polygon)
+                
+EVG_tidy <- EVG_raw_data %>%
+              subset(dbh_cm != "NA") %>%
+              group_by(plot_ID) %>%
+              arrange(date)
+              
+EVG_tidy_spat <- EVG_tidy %>%
+                  st_as_sf(coords = c("longitude", "latitude"), crs = study_crs)
+```
 
-Show tables, plots, etc. and describe them.
+# Results:
 
-# Conclusions
+## Plot spatial distribution of study plots
+
+```{r, warning = FALSE, message = FALSE}
+ggplot() +
+  geom_sf(data = study_area)+
+  geom_sf(data = EVG_tidy_spat, aes(color = plot_ID)) 
+```
+
+## Plot hurricane tracks passing through the study area between 1992-2011
+
+```{r, warning = FALSE, message = FALSE}
+hurr_study <- hurr_tracks %>%
+                st_as_sf(.,coords = c("longitude", "latitude"), crs = study_crs)
+
+hurr_study_area <- st_crop(hurr_study, bbox_polygon)
+#I'm also a little confused on why this is limiting the hurricane data to a single point
+
+ggplot(world)+
+  geom_sf(data = study_area)+
+  geom_sf(data = hurr_study_area, aes(color = storm_id)) 
+```
+
+# Conclusions:
 
 \[\~200 words\]
 
 Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
 
-# References
+# References:
 
-All sources are cited in a consistent manner
+Doyle, T. W., Smith, T. J., & Robblee, M. B. (1995). Wind Damage Effects of Hurricane Andrew on Mangrove Communities Along the Southwest Coast of Florida, USA. Journal of Coastal Research, 159–168.
+
+Laura C Feher, Thomas J. Smith III, Gordon H Anderson, Ginger Tiling-Range, Karen M. Balentine, Greg A Ward, Kevin R. T. Whelan, Christa L. Walker, Andre Daniels, Michael J Osland, & Fara S. Ilami. (n.d.). Everglades mangrove vegetation data from 23 long-term plots (1992-2011) \[Dataset\]. U.S. Geological Survey. https://doi.org/10.5066/P13DONMU
+
+Smith III, T. J., Anderson, G., Balentine, K., Tiling, G., Ward, G., & Whelan, K. (2009). Cumulative Impacts of Hurricanes on Florida Mangrove Ecosystems: Sediment Deposition, Storm Surges and Vegetation. Wetlands, 29, 24–34. https://doi.org/10.1672/08-40.1
