@@ -7,7 +7,7 @@ date-format: long
 
 # Introduction:
 
-  Mangrove trees are a very important aspect of many coastal ecosystems. Many of these areas are also impacted by hurricanes, therefore it is beneficial to understand how hurricanes damage mangrove trees and how long it takes trees to recover from said damage. Following Hurricane Andrew in 1992 permanent study plots were established, then more added to examine historic areas of study. In total there are 23 plots with data spanning 1992-2011. The goal of this project is to visualize many different aspects of how individual mangroves, different mangrove species and the plots overall respond to hurricanes over time.
+Mangrove trees are a very important aspect of many coastal ecosystems. Many of these areas are also impacted by hurricanes, therefore it is beneficial to understand how hurricanes damage mangrove trees and how long it takes trees to recover from said damage. Following Hurricane Andrew in 1992 permanent study plots were established, then more added to examine historic areas of study. In total there are 23 plots with data spanning 1992-2011. The goal of this project is to visualize many different aspects of how individual mangroves, different mangrove species and the plots overall respond to hurricanes over time.
 
 # Materials and Methods:
 
@@ -17,10 +17,6 @@ date-format: long
 library(readr)
 library(tidyverse)
 library(ggplot2)
-library(drat)
-addRepo("geanders")
-update.packages("hurricaneexposure")
-update.packages("hurricaneexposuredata")
 library(hurricaneexposure)
 library(hurricaneexposuredata)
 library(sf)
@@ -100,6 +96,6 @@ Clear summary adequately describing the results and putting them in context. Dis
 
 Doyle, T. W., Smith, T. J., & Robblee, M. B. (1995). Wind Damage Effects of Hurricane Andrew on Mangrove Communities Along the Southwest Coast of Florida, USA. Journal of Coastal Research, 159–168.
 
-Laura C Feher, Thomas J. Smith III, Gordon H Anderson, Ginger Tiling-Range, Karen M. Balentine, Greg A Ward, Kevin R. T. Whelan, Christa L. Walker, Andre Daniels, Michael J Osland, & Fara S. Ilami. (n.d.). Everglades mangrove vegetation data from 23 long-term plots (1992-2011) \[Dataset\]. U.S. Geological Survey. https://doi.org/10.5066/P13DONMU
+Laura C Feher, Thomas J. Smith III, Gordon H Anderson, Ginger Tiling-Range, Karen M. Balentine, Greg A Ward, Kevin R. T. Whelan, Christa L. Walker, Andre Daniels, Michael J Osland, & Fara S. Ilami. (n.d.). Everglades mangrove vegetation data from 23 long-term plots (1992-2011). U.S. Geological Survey. https://doi.org/10.5066/P13DONMU
 
 Smith III, T. J., Anderson, G., Balentine, K., Tiling, G., Ward, G., & Whelan, K. (2009). Cumulative Impacts of Hurricanes on Florida Mangrove Ecosystems: Sediment Deposition, Storm Surges and Vegetation. Wetlands, 29, 24–34. https://doi.org/10.1672/08-40.1
