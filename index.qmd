@@ -14,16 +14,33 @@ Mangrove trees are a very important aspect of many coastal ecosystems. Many of t
 ## Load libraries
 
 ```{r, warning = FALSE, message = FALSE}
+if(!requireNamespace("readr", quietly = TRUE)){
+  install.packages("readr")
+}
 library(readr)
+if(!requireNamespace("tidyverse", quietly = TRUE)){
+  install.packages("tidyverse")
+}
 library(tidyverse)
+if(!requireNamespace("ggplot2", quietly = TRUE)){
+  install.packages("ggplot2")
+}
 library(ggplot2)
-library(remotes)
-Sys.setenv(R_REMOTES_STANDALONE = TRUE)
-remotes::install_github("geanders/hurricaneexposure")
+if(!requireNamespace("hurricaneexposure", quietly = TRUE)){
+  install.packages("remotes")
+}
 library(hurricaneexposure)
-remotes::install_github("geanders/hurricaneexposuredata")
+if(!requireNamespace("hurricaneexposuredata", quietly = TRUE)){
+  install.packages("hurricaneexposuredata")
+}
 library(hurricaneexposuredata)
+if(!requireNamespace("sf", quietly = TRUE)){
+  install.packages("sf")
+}
 library(sf)
+if(!requireNamespace("spData", quietly = TRUE)){
+  install.packages("spData")
+}
 library(spData)
 ```
 
