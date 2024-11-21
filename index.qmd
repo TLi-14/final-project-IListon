@@ -70,7 +70,7 @@ bbox_polygon <- st_as_sf(st_sfc(st_polygon(list(matrix(c(
 study_crs <- st_crs(bbox_polygon)
 
 us_states_transform <- st_transform(us_states, crs = study_crs)
-#this study area polygon is giving me trouble, I'm not sure if it is a projection issue or if I should start with a different shapefile
+#This study area polygon is giving me trouble, I'm not sure if it is a projection issue or if I should start with a different shapefile?
 
 study_area <- st_crop(us_states_transform, bbox_polygon)
                 
@@ -100,7 +100,7 @@ hurr_study <- hurr_tracks %>%
                 st_as_sf(.,coords = c("longitude", "latitude"), crs = study_crs)
 
 hurr_study_area <- st_crop(hurr_study, bbox_polygon)
-#I'm also a little confused on why this is limiting the hurricane data to a single point
+#I'm also a little confused on why this is limiting the hurricane data to a single point?
 
 ggplot(world)+
   geom_sf(data = study_area)+
