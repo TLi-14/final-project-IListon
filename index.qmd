@@ -18,26 +18,32 @@ if(!requireNamespace("readr", quietly = TRUE)){
   install.packages("readr")
 }
 library(readr)
+
 if(!requireNamespace("tidyverse", quietly = TRUE)){
   install.packages("tidyverse")
 }
 library(tidyverse)
+
 if(!requireNamespace("ggplot2", quietly = TRUE)){
   install.packages("ggplot2")
 }
 library(ggplot2)
+
 if(!requireNamespace("hurricaneexposure", quietly = TRUE)){
-  install.packages("remotes")
+  install.packages("hurricaneexposure")
 }
 library(hurricaneexposure)
+
 if(!requireNamespace("hurricaneexposuredata", quietly = TRUE)){
   install.packages("hurricaneexposuredata")
 }
 library(hurricaneexposuredata)
+
 if(!requireNamespace("sf", quietly = TRUE)){
   install.packages("sf")
 }
 library(sf)
+
 if(!requireNamespace("spData", quietly = TRUE)){
   install.packages("spData")
 }
