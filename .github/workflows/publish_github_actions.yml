@@ -29,6 +29,7 @@ jobs:
 
           
       - name: install biomonitor
+        env:  GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: Rscript -e 'install.packages("devtools"); library(devtools); install_github("alexology/biomonitoR", ref = "main")'
 
       - name: Install R Dependencies
