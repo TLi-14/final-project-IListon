@@ -104,58 +104,6 @@ ggplot() +
   geom_sf(data = study_area, fill = "green")+
   geom_sf(data = hurr_paths_spat, aes(color = storm_id))
 ```
-# Make a bar chart with the species make up of each plot over time:
-```{r, warning = FALSE, message= FALSE, }
-sites <- factor(EVG_tidy$plot_ID)
-       
-cores <- detectCores()
-cl <- makeCluster(cores-4)
-registerDoParallel(cl)
-
-results <- foreach(i = levels(sites), 
-                   .packages = c("dplyr", "ggplot2")) %dopar% {
-                  plot_makeup <- EVG_tidy %>% 
-                                  filter(plot_ID == i) %>%
-                                  group_by(.,plot_ID, date, scientific_name) %>%
-                                  summarize(individual_count = n())
-                  
-                  bar_chart <- ggplot(data = plot_makeup, 
-                                    aes(fill= scientific_name, 
-                                        y = individual_count, 
-                                        x = date)) +
-                                    geom_bar(position="fill", 
-                                             stat = "identity")+
-                                    ggtitle(paste("Plot", i))
-                     
-                  ggsave(filename = paste("plot_", i, ".png", sep = ""), 
-                           plot = bar_chart)}
-
-stopCluster(cl)
-```
-
-## arrange each individual plot bar chart into one group
-```{r, warning = FALSE, message= FALSE}
-
-imgs <- factor(results)
-
-
-cl <- makeCluster(cores-4)
-registerDoParallel(cl)
-
-gorb_list <- foreach(i = levels(imgs),
-                     .packages = "png",
-                     .combine = "rbind") %dopar% {
-                      img <- readPNG(i)
-                      rasterGrob(img)}
-
-stopCluster(cl)
-
-# Check the list of grobs
-print(grob_list)
-
-grid.arrange(results)
-
-```
 
 # Conclusions:
 
