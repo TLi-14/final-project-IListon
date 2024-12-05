@@ -4,21 +4,42 @@
     "href": "index.html",
     "title": "Visualizing the impact of hurricanes on mangroves over time",
     "section": "",
-    "text": "[~ 200 words]\nMangrove trees are a very important aspect of many coastal ecosystems. Many of these areas are also impacted by hurricanes, therefore it is beneficial to understand how hurricanes damage mangrove trees and how long it takes trees to recover from said damage."
+    "text": "Mangrove trees are a very important aspect of many coastal ecosystems. Many of these areas are also impacted by hurricanes, therefore it is beneficial to understand how hurricanes damage mangrove trees and how long it takes trees to recover from said damage. Following Hurricane Andrew in 1992 permanent study plots were established, then more were added to examine historic areas of study. In total there are 23 plots with data spanning 1992-2011. The goal of this project is to visualize many different aspects of how individual mangroves, different mangrove species and the plots overall respond to hurricanes over time."
   },
   {
-    "objectID": "index.html#download-and-clean-all-required-data",
-    "href": "index.html#download-and-clean-all-required-data",
+    "objectID": "index.html#load-libraries",
+    "href": "index.html#load-libraries",
     "title": "Visualizing the impact of hurricanes on mangroves over time",
-    "section": "Download and clean all required data",
-    "text": "Download and clean all required data\nAdd any additional processing steps here."
+    "section": "Load libraries",
+    "text": "Load libraries\n\nif(!requireNamespace(\"readr\", quietly = TRUE)){\n  install.packages(\"readr\")\n}\nlibrary(readr)\n\nif(!requireNamespace(\"tidyverse\", quietly = TRUE)){\n  install.packages(\"tidyverse\")\n}\nlibrary(tidyverse)\n\nif(!requireNamespace(\"ggplot2\", quietly = TRUE)){\n  install.packages(\"ggplot2\")\n}\nlibrary(ggplot2)\n\nif(!requireNamespace(\"hurricaneexposure\", quietly = TRUE)){\n  install.packages(\"hurricaneexposure\")\n}\nlibrary(hurricaneexposure)\n\nif(!requireNamespace(\"hurricaneexposuredata\", quietly = TRUE)){\n  install.packages(\"hurricaneexposuredata\")\n}\nlibrary(hurricaneexposuredata)\n\nif(!requireNamespace(\"sf\", quietly = TRUE)){\n  install.packages(\"sf\")\n}\nlibrary(sf)\n\nif(!requireNamespace(\"spData\", quietly = TRUE)){\n  install.packages(\"spData\")\n}\nlibrary(spData)"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "objectID": "index.html#load-data",
+    "href": "index.html#load-data",
+    "title": "Visualizing the impact of hurricanes on mangroves over time",
+    "section": "Load data",
+    "text": "Load data\n\ndata(\"us_states\")\nEVG_raw_data &lt;- read.csv(\"data/Everglades_Mangrove_Vegetation_plot_data.csv\")\ndata(\"hurr_tracks\")"
+  },
+  {
+    "objectID": "index.html#clean-up-data",
+    "href": "index.html#clean-up-data",
+    "title": "Visualizing the impact of hurricanes on mangroves over time",
+    "section": "Clean up data",
+    "text": "Clean up data\n\n#create the study area bounding box\nbbox_coords &lt;- c(-81.2133, 25.5831,-80.9134, 25.1589)\n\n#create a polygon from the bounding box\nbbox_polygon &lt;- st_as_sf(st_sfc(st_polygon(list(matrix(c(\n   bbox_coords[1], bbox_coords[2],  \n   bbox_coords[3], bbox_coords[2],\n   bbox_coords[3], bbox_coords[4],  \n   bbox_coords[1], bbox_coords[4],\n   bbox_coords[1], bbox_coords[2]   \n), ncol = 2, byrow = TRUE))), crs = 4326))\n\nstudy_crs &lt;- st_crs(bbox_polygon)\n\nus_states_transform &lt;- st_transform(us_states, crs = study_crs)\n#This study area polygon is giving me trouble, I'm not sure if it is a projection issue or if I should start with a different shapefile?\n\nstudy_area &lt;- st_crop(us_states_transform, bbox_polygon)\n                \nEVG_tidy &lt;- EVG_raw_data %&gt;%\n              subset(dbh_cm != \"NA\") %&gt;%\n              group_by(plot_ID) %&gt;%\n              arrange(date)\n              \nEVG_tidy_spat &lt;- EVG_tidy %&gt;%\n                  st_as_sf(coords = c(\"longitude\", \"latitude\"), crs = study_crs)"
+  },
+  {
+    "objectID": "index.html#plot-spatial-distribution-of-study-plots",
+    "href": "index.html#plot-spatial-distribution-of-study-plots",
+    "title": "Visualizing the impact of hurricanes on mangroves over time",
+    "section": "Plot spatial distribution of study plots",
+    "text": "Plot spatial distribution of study plots\n\nggplot() +\n  geom_sf(data = study_area)+\n  geom_sf(data = EVG_tidy_spat, aes(color = plot_ID))"
+  },
+  {
+    "objectID": "index.html#plot-hurricane-tracks-passing-through-the-study-area-between-1992-2011",
+    "href": "index.html#plot-hurricane-tracks-passing-through-the-study-area-between-1992-2011",
+    "title": "Visualizing the impact of hurricanes on mangroves over time",
+    "section": "Plot hurricane tracks passing through the study area between 1992-2011",
+    "text": "Plot hurricane tracks passing through the study area between 1992-2011\n\nhurr_study &lt;- hurr_tracks %&gt;%\n                st_as_sf(.,coords = c(\"longitude\", \"latitude\"), crs = study_crs)\n\nhurr_study_area &lt;- st_crop(hurr_study, bbox_polygon)\n#I'm also a little confused on why this is limiting the hurricane data to a single point?\n\nggplot(world)+\n  geom_sf(data = study_area)+\n  geom_sf(data = hurr_study_area, aes(color = storm_id))"
   },
   {
     "objectID": "data/Readme.html",
@@ -28,17 +49,10 @@
     "text": "Place any data needed by your analysis in this folder. Please do not store large files here. Then read in any data using the ‘data’ path. For example, read_csv(\"data/data.csv\")."
   },
   {
-    "objectID": "Liston_Website.html",
-    "href": "Liston_Website.html",
-    "title": "Visualizing the impact of hurricanes on mangroves over time",
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
     "section": "",
-    "text": "[~ 200 words]\nMangrove trees are a very important aspect of many coastal ecosystems. Many of these areas are also impacted by hurricanes, therefore it is beneficial to understand how hurricanes damage mangrove trees and how long it takes trees to recover from said damage."
-  },
-  {
-    "objectID": "Liston_Website.html#download-and-clean-all-required-data",
-    "href": "Liston_Website.html#download-and-clean-all-required-data",
-    "title": "Visualizing the impact of hurricanes on mangroves over time",
-    "section": "Download and clean all required data",
-    "text": "Download and clean all required data"
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
   }
 ]
