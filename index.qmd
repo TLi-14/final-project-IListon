@@ -14,48 +14,33 @@ Mangrove trees are a very important aspect of many coastal ecosystems. Many of t
 ## Load libraries
 
 ```{r, warning = FALSE, message = FALSE}
-if(!requireNamespace("readr", quietly = TRUE)){
-  install.packages("readr")
-}
 library(readr)
-
-if(!requireNamespace("tidyverse", quietly = TRUE)){
-  install.packages("tidyverse")
-}
 library(tidyverse)
-
-if(!requireNamespace("ggplot2", quietly = TRUE)){
-  install.packages("ggplot2")
-}
 library(ggplot2)
-
-if(!requireNamespace("hurricaneexposure", quietly = TRUE)){
-  install.packages("hurricaneexposure")
-}
+library(drat)
+addRepo("geanders")
+update.packages("hurricaneexposure")
+update.packages("hurricaneexposuredata")
 library(hurricaneexposure)
-
-if(!requireNamespace("hurricaneexposuredata", quietly = TRUE)){
-  install.packages("hurricaneexposuredata")
-}
 library(hurricaneexposuredata)
-
-if(!requireNamespace("sf", quietly = TRUE)){
-  install.packages("sf")
-}
 library(sf)
-
-if(!requireNamespace("spData", quietly = TRUE)){
-  install.packages("spData")
-}
 library(spData)
+library(leaflet)
+library(foreach)
+library(doParallel)
+library(lubridate)
+library(grid)
+library(gtable)
+library(gridExtra)
+library(png)
 ```
 
 ## Load data
 
 ```{r, warning = FALSE, message = FALSE}
 data("us_states")
-EVG_raw_data <- read.csv("data/Everglades_Mangrove_Vegetation_plot_data.csv")
 data("hurr_tracks")
+EVG_raw_data <- read.csv("data/Everglades_Mangrove_Vegetation_plot_data.csv")
 ```
 
 ## Clean up data
@@ -71,22 +56,25 @@ bbox_polygon <- st_as_sf(st_sfc(st_polygon(list(matrix(c(
    bbox_coords[3], bbox_coords[4],  
    bbox_coords[1], bbox_coords[4],
    bbox_coords[1], bbox_coords[2]   
-), ncol = 2, byrow = TRUE))), crs = 4326))
+), ncol = 2, byrow = TRUE))), crs = 4269))
 
 study_crs <- st_crs(bbox_polygon)
+FL_state <- filter(us_states, NAME == "Florida")
 
-us_states_transform <- st_transform(us_states, crs = study_crs)
-#This study area polygon is giving me trouble, I'm not sure if it is a projection issue or if I should start with a different shapefile?
+study_area <- st_crop(us_states, bbox_polygon)
 
-study_area <- st_crop(us_states_transform, bbox_polygon)
-                
 EVG_tidy <- EVG_raw_data %>%
               subset(dbh_cm != "NA") %>%
               group_by(plot_ID) %>%
-              arrange(date)
+              mutate(across(contains("date"), ~ mdy(.))) %>%
+              arrange(., date)
               
 EVG_tidy_spat <- EVG_tidy %>%
-                  st_as_sf(coords = c("longitude", "latitude"), crs = study_crs)
+                  st_as_sf(coords = c("longitude", "latitude"), 
+                           crs = study_crs)
+
+EVG_plots <- EVG_tidy_spat %>%
+              distinct(site, geometry)
 ```
 
 # Results:
@@ -94,23 +82,79 @@ EVG_tidy_spat <- EVG_tidy %>%
 ## Plot spatial distribution of study plots
 
 ```{r, warning = FALSE, message = FALSE}
-ggplot() +
-  geom_sf(data = study_area)+
-  geom_sf(data = EVG_tidy_spat, aes(color = plot_ID)) 
+plot_dist <- leaflet(EVG_tidy_spat)%>%
+                addTiles()%>%
+                fitBounds(-81.2133, 25.5831,-80.9134, 25.1589)%>%
+                addMarkers(data = EVG_plots)
+plot_dist    
 ```
 
 ## Plot hurricane tracks passing through the study area between 1992-2011
 
 ```{r, warning = FALSE, message = FALSE}
-hurr_study <- hurr_tracks %>%
-                st_as_sf(.,coords = c("longitude", "latitude"), crs = study_crs)
+hurr_paths <- map_tracks(storms = c("Andrew-1992","Irene-1999",
+                                    "Katrina-2005", "Wilma-2005"))
 
-hurr_study_area <- st_crop(hurr_study, bbox_polygon)
-#I'm also a little confused on why this is limiting the hurricane data to a single point?
+hurr_paths_spat <- hurr_paths[["layers"]][[2]][["data"]] %>%
+                    st_as_sf(.,coords = c("longitude", "latitude"), 
+                              crs = 4269) %>%
+                    st_crop(.,FL_state)
+ggplot() +
+  geom_sf(data = FL_state) +
+  geom_sf(data = study_area, fill = "green")+
+  geom_sf(data = hurr_paths_spat, aes(color = storm_id))
+```
+# Make a bar chart with the species make up of each plot over time:
+```{r, warning = FALSE, message= FALSE, }
+sites <- factor(EVG_tidy$plot_ID)
+       
+cores <- detectCores()
+cl <- makeCluster(cores-4)
+registerDoParallel(cl)
 
-ggplot(world)+
-  geom_sf(data = study_area)+
-  geom_sf(data = hurr_study_area, aes(color = storm_id)) 
+results <- foreach(i = levels(sites), 
+                   .packages = c("dplyr", "ggplot2")) %dopar% {
+                  plot_makeup <- EVG_tidy %>% 
+                                  filter(plot_ID == i) %>%
+                                  group_by(.,plot_ID, date, scientific_name) %>%
+                                  summarize(individual_count = n())
+                  
+                  bar_chart <- ggplot(data = plot_makeup, 
+                                    aes(fill= scientific_name, 
+                                        y = individual_count, 
+                                        x = date)) +
+                                    geom_bar(position="fill", 
+                                             stat = "identity")+
+                                    ggtitle(paste("Plot", i))
+                     
+                  ggsave(filename = paste("plot_", i, ".png", sep = ""), 
+                           plot = bar_chart)}
+
+stopCluster(cl)
+```
+
+## arrange each individual plot bar chart into one group
+```{r, warning = FALSE, message= FALSE}
+
+imgs <- factor(results)
+
+
+cl <- makeCluster(cores-4)
+registerDoParallel(cl)
+
+gorb_list <- foreach(i = levels(imgs),
+                     .packages = "png",
+                     .combine = "rbind") %dopar% {
+                      img <- readPNG(i)
+                      rasterGrob(img)}
+
+stopCluster(cl)
+
+# Check the list of grobs
+print(grob_list)
+
+grid.arrange(results)
+
 ```
 
 # Conclusions:
