@@ -74,7 +74,7 @@ EVG_tidy_spat <- EVG_tidy %>%
                            crs = study_crs)
 
 EVG_plots <- EVG_tidy_spat %>%
-              distinct(site, geometry)
+              distinct(plot_ID, geometry)
 ```
 
 # Results:
@@ -84,7 +84,8 @@ EVG_plots <- EVG_tidy_spat %>%
 ```{r, warning = FALSE, message = FALSE}
 plot_dist <- leaflet(EVG_tidy_spat)%>%
                 addTiles()%>%
-                fitBounds(-81.2133, 25.5831,-80.9134, 25.1589)%>%
+                fitBounds(., lng1 = -81.2133, lat1 = 25.5831,
+                          lng2 = -80.9134, lat2 = 25.1589)%>%
                 addMarkers(data = EVG_plots)
 plot_dist    
 ```
@@ -103,6 +104,33 @@ ggplot() +
   geom_sf(data = FL_state) +
   geom_sf(data = study_area, fill = "green")+
   geom_sf(data = hurr_paths_spat, aes(color = storm_id))
+```
+
+```{r}
+sites <- factor(EVG_tidy$plot_ID)
+
+cl <- makeCluster(4)
+registerDoParallel(cl)
+
+results <- foreach(i = levels(sites), 
+                   .packages = c("dplyr", "ggplot2"),
+                   .combine = "rbind") %dopar% {
+                  plot_makeup <- EVG_tidy %>% 
+                                  filter(plot_ID == i) %>%
+                                  group_by(.,plot_ID, date, scientific_name) %>%
+                                  summarize(individual_count = n())
+                  
+                  bar_chart <- ggplot(data = plot_makeup, 
+                                    aes(fill= scientific_name, 
+                                        y = individual_count, 
+                                        x = date)) +
+                                    geom_bar(position="fill", stat = "identity")+
+                                    ggtitle(paste("Plot", i))
+                     
+                  ggsave(filename = paste("plot_", i, ".png", sep = ""), 
+                           plot = bar_chart)}
+
+stopCluster(cl)
 ```
 
 # Conclusions:
